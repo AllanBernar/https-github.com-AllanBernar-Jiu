@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BJJ Mastery - 1 Ano de Jornada</title>
+    <style>
+        :root { --gold: #ffcc00; --bg: #121212; --card: #1e1e1e; --text: #e0e0e0; --green: #2ecc71; --blue: #3498db; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; line-height: 1.6; }
+        .container { max-width: 1100px; margin: auto; }
+        header { text-align: center; padding: 40px 0; border-bottom: 1px solid #333; margin-bottom: 30px; }
+        h1 { color: var(--gold); font-size: 2.5em; margin-bottom: 10px; }
+        
+        /* Stats & Calendar */
+        .dashboard-top { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: var(--card); padding: 20px; border-radius: 12px; text-align: center; border: 1px solid #333; }
+        .stat-number { font-size: 3em; font-weight: bold; color: var(--gold); display: block; }
+        
+        .calendar-card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid #333; }
+        .grid-treino { display: grid; grid-template-columns: repeat(auto-fill, minmax(35px, 1fr)); gap: 6px; margin-top: 15px; max-height: 250px; overflow-y: auto; padding-right: 10px; }
+        .dia { width: 35px; height: 35px; background: #333; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.75em; transition: 0.2s; border: 1px solid transparent; }
+        .dia:hover { border-color: var(--gold); }
+        .dia.checked { background: var(--green); color: black; font-weight: bold; box-shadow: 0 0 10px rgba(46, 204, 113, 0.3); }
+
+        /* Categorias Organizadas */
+        .section-title { color: var(--gold); border-bottom: 2px solid var(--gold); display: inline-block; margin: 30px 0 15px; padding-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .tecnicas-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+        .categoria { background: var(--card); padding: 20px; border-radius: 12px; transition: transform 0.2s; border: 1px solid #333; }
+        .categoria:hover { transform: translateY(-5px); border-color: #444; }
+        .categoria h3 { margin-top: 0; display: flex; align-items: center; gap: 10px; font-size: 1.2em; color: white; }
+        
+        ul { list-style: none; padding: 0; }
+        li { padding: 10px 0; border-bottom: 1px solid #2a2a2a; display: flex; justify-content: space-between; align-items: center; }
+        li:last-child { border: none; }
+        a { color: var(--blue); text-decoration: none; font-size: 0.95em; }
+        a:hover { color: #5dade2; text-decoration: underline; }
+        .tag { font-size: 0.7em; padding: 2px 8px; border-radius: 10px; background: #333; color: #aaa; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>PROJETO FAIXA AZUL</h1>
+        <p>Cronograma de Treino: 2x por Semana durante 52 Semanas</p>
+    </header>
+
+    <div class="dashboard-top">
+        <div class="stat-card">
+            <span>Treinos Concluídos</span>
+            <span class="stat-number" id="countDisplay">0</span>
+            <span>de 104 treinos</span>
+        </div>
+        <div class="calendar-card">
+            <h3>Calendário de Consistência</h3>
+            <div class="grid-treino" id="gridTreino"></div>
+        </div>
+    </div>
+
+    <h2 class="section-title">1. Fundamentos e Sobrevivência (Mês 1-4)</h2>
+    <div class="tecnicas-grid">
+        <div class="categoria">
+            <h3>🛡️ Saídas e Defesas</h3>
+            <ul>
+                <li><a href="https://www.youtube.com/results?search_query=bjj+upa+escape+mount" target="_blank">Saída da Montada (Upa)</a> <span class="tag">Essencial</span></li>
+                <li><a href="https://www.youtube.com/results?search_query=bjj+shrimp+escape+side+control" target="_blank">Fuga de Quadril (Sair do 100kg)</a> <span class="tag">Essencial</span></li>
+                <li><a href="https://www.youtube.com/results?search_query=bjj+back+escape" target="_blank">Saída das Costas</a> <span class="tag">Defesa</span></li>
+            </ul>
+        </div>
+        <div class="categoria">
+            <h3>🤼 Quedas e Entradas</h3>
+            <ul>
+                <li><a href="https://www.youtube.com/results?search_query=bjj+double+leg+takedown" target="_blank">Double Leg (Baiana)</a> <span class="tag">Queda</span></li>
+                <li><a href="https://www.youtube.com/results?search_query=bjj+osoto+gari" target="_blank">Osoto Gari</a> <span class="tag">Judô</span></li>
+                <li><a href="https://www.youtube.com/results?search_query=bjj+pulling+guard" target="_blank">Puxar para a Guarda</a> <span class="tag">Estratégia</span></li>
+            </ul>
+        </div>
+    </div>
+
+    <h2 class="section-title">2. Controle e Ofensiva (Mês 5-8)</h2>
+    <div class="tecnicas-grid">
+        <div class="categoria">
+            <h3>🔄 Raspagens e Inversões</h3>
+            <ul>
+                <li><a href="https://www.youtube.com/results?search_query=bjj+scissor+sweep" target="_blank">Raspagem Tesoura</a> <span class="tag">Guarda Fechada</span></li>
+                <li><a href="https://www.youtube.com/results?search_query=bjj+flower+sweep" target="_blank">Raspagem Flor</a> <span class="tag">Guarda Fechada</span></li>
+                <li><a href="https://www.youtube.com/results?search_query=bjj+hip+bump+sweep" target="_blank">Raspagem de Quadril</a> <span class="tag">Básica</span></li>
+            </ul>
+        </div>
+        <div class="categoria">
+            <h3>⚔️ Finalizações Básicas</h3>
+            <ul>
+                <li><a href="https://www.youtube.com/results?search_query=bjj+armbar+closed+guard" target="_blank">Armlock da Guarda</a> <span class="tag">Ataque</span></li>
+                <li><a href="https://www.youtube.com/results?search_query=bjj+triangle+choke" target="_blank">Triângulo</a> <span class="tag">Ataque</span></li>
+                <li><a href="https://www.youtube.com/results?search_query=bjj+rear+naked+choke" target="_blank">Mata-Leão</a> <span class="tag">Costas</span></li>
+            </ul>
+        </div>
+    </div>
+
+    <h2 class="section-title">3. Moderno e Avançado (Mês 9-12)</h2>
+    <div class="tecnicas-grid">
+        <div class="categoria">
+            <h3>🌪️ Berimbolos e Inversões</h3>
+            <ul>
+                <li><a href="https://www.youtube.com/results?search_query=berimbolo+for+beginners" target="_blank">Conceitos do Berimbolo</a> <span class="tag">Avançado</span></li>
+                <li><a href="https://www.youtube.com/results?search_query=bjj+de+la+riva+sweep" target="_blank">Raspagens De La Riva</a> <span class="tag">Guarda Aberta</span></li>
+                <li><a href="https://www.youtube.com/results?search_query=bjj+kiss+of+the+dragon+sweep" target="_blank">Kiss of the Dragon</a> <span class="tag">Inversão</span></li>
+            </ul>
+        </div>
+        <div class="categoria">
+            <h3>📐 Passagem de Guarda</h3>
+            <ul>
+                <li><a href="https://www.youtube.com/results?search_query=bjj+knee+cut+pass" target="_blank">Knee Cut (Corte de Joelho)</a> <span class="tag">Pressão</span></li>
+                <li><a href="https://www.youtube.com/results?search_query=bjj+toreando+pass" target="_blank">Toreando</a> <span class="tag">Velocidade</span></li>
+                <li><a href="https://www.youtube.com/results?search_query=bjj+stack+pass" target="_blank">Passagem de Pressão (Stack)</a> <span class="tag">Peso</span></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    const grid = document.getElementById('gridTreino');
+    const countDisplay = document.getElementById('countDisplay');
+    const totalTreinos = 104;
+
+    function updateStats() {
+        const list = JSON.parse(localStorage.getItem('bjj_treinos')) || [];
+        countDisplay.innerText = list.length;
+    }
+
+    const treinosConcluidos = JSON.parse(localStorage.getItem('bjj_treinos')) || [];
+
+    for (let i = 1; i <= totalTreinos; i++) {
+        const div = document.createElement('div');
+        div.classList.add('dia');
+        if (treinosConcluidos.includes(i)) div.classList.add('checked');
+        div.innerText = i;
+        
+        div.onclick = () => {
+            div.classList.toggle('checked');
+            saveProgress(i);
+        };
+        grid.appendChild(div);
+    }
+
+    function saveProgress(num) {
+        let list = JSON.parse(localStorage.getItem('bjj_treinos')) || [];
+        if (list.includes(num)) {
+            list = list.filter(item => item !== num);
+        } else {
+            list.push(num);
+        }
+        localStorage.setItem('bjj_treinos', JSON.stringify(list));
+        updateStats();
+    }
+
+    updateStats();
+</script>
+
+</body>
+</html>
