@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BJJ SENTINEL APEX V6</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --gold: #ffcc00; --bg: #050505; --card: #0d0d0d; --border: #1a1a1a;
+            --blue: #00d4ff; --green: #00ff7f; --red: #ff3e3e; --text: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; }
+
+        /* --- LOGIN --- */
+        #authScreen { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .auth-box { width: 100%; max-width: 400px; padding: 30px; background: var(--card); border: 1px solid var(--border); border-radius: 20px; text-align: center; }
+        .auth-box h1 { font-family: 'Orbitron'; color: var(--gold); margin-bottom: 20px; font-size: 1.5rem; letter-spacing: 2px; }
+        
+        .form-group { text-align: left; margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 9px; color: var(--gold); font-family: 'Orbitron'; margin-bottom: 4px; }
+        
+        input, select { width: 100%; padding: 10px; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; font-size: 13px; }
+        input:focus { border-color: var(--gold); outline: none; }
+
+        /* --- APP --- */
+        #app { display: none; padding: 20px; max-width: 1400px; margin: auto; }
+        .main-layout { display: grid; grid-template-columns: 300px 1fr 320px; gap: 20px; }
+        @media (max-width: 1100px) { .main-layout { grid-template-columns: 1fr; } }
+
+        .panel { background: var(--card); border: 1px solid var(--border); border-radius: 15px; padding: 15px; margin-bottom: 15px; }
+        h3 { font-family: 'Orbitron'; font-size: 9px; color: var(--gold); margin-bottom: 10px; border-left: 3px solid var(--gold); padding-left: 8px; }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(25px, 1fr)); gap: 4px; max-height: 250px; overflow-y: auto; padding-right: 5px; }
+        .dia { aspect-ratio: 1; background: #000; border: 1px solid #1a1a1a; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #444; cursor: pointer; }
+        .dia.done { background: var(--gold); color: #000; border: none; font-weight: 800; }
+        .dia.selected { outline: 2px solid #fff; color: #fff; }
+
+        .btn { width: 100%; padding: 12px; background: var(--gold); border: none; border-radius: 8px; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; font-size: 10px; text-transform: uppercase; transition: 0.3s; }
+        .btn:hover { filter: brightness(1.2); letter-spacing: 1px; }
+
+        .rank-tag { display: inline-block; padding: 4px 10px; border-radius: 4px; font-family: 'Orbitron'; font-size: 9px; font-weight: 900; margin-top: 5px; }
+        textarea { width: 100%; height: 150px; background: #000; border: 1px solid #222; border-radius: 10px; padding: 10px; color: #fff; resize: none; margin-bottom: 10px; font-family: 'Inter'; }
+        
+        .joint { fill: #222; cursor: pointer; transition: 0.2s; }
+        .joint.active { fill: var(--red); filter: drop-shadow(0 0 3px var(--red)); }
+    </style>
+</head>
+<body>
+
+<div id="authScreen">
+    <div class="auth-box">
+        <h1>BJJ SENTINEL</h1>
+        <div class="form-group">
+            <label>NOME (MÍN. 3 LETRAS)</label>
+            <input type="text" id="inName" placeholder="Seu Nome Completo">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div class="form-group">
+                <label>IDADE (MÍN. 4 ANOS)</label>
+                <input type="number" id="inAge" value="20">
+            </div>
+            <div class="form-group">
+                <label>FAIXA</label>
+                <select id="inRank">
+                    <option value="Branca">Branca</option>
+                    <option value="Cinza">Cinza</option>
+                    <option value="Amarela">Amarela</option>
+                    <option value="Laranja">Laranja</option>
+                    <option value="Verde">Verde</option>
+                    <option value="Azul">Azul</option>
+                    <option value="Roxa">Roxa</option>
+                    <option value="Marrom">Marrom</option>
+                    <option value="Preta">Preta</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>FREQUÊNCIA SEMANAL</label>
+            <select id="inFreq">
+                <option value="1">1x na semana</option>
+                <option value="2">2x na semana</option>
+                <option value="3" selected>3x na semana</option>
+                <option value="4">4x na semana</option>
+                <option value="5">5x na semana</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>E-MAIL</label>
+            <input type="email" id="inEmail" placeholder="seu@email.com">
+        </div>
+        <button class="btn" onclick="Control.login()">INICIAR PROTOCOLO</button>
+    </div>
+</div>
+
+<div id="app">
+    <div class="main-layout">
+        <aside>
+            <div class="panel">
+                <h3 id="uiName">ATLETA</h3>
+                <div id="uiRank" class="rank-tag">FAIXA</div>
+                <div id="uiAge" style="font-size: 10px; color: #555; margin-top: 5px;">-</div>
+            </div>
+            <div class="panel">
+                <h3>MAPA DE LESÕES</h3>
+                <svg viewBox="0 0 200 450" style="width:100%; height:200px;">
+                    <circle class="joint" data-j="Cabeça" cx="100" cy="40" r="20"/>
+                    <circle class="joint" data-j="Ombro D" cx="65" cy="90" r="10"/>
+                    <circle class="joint" data-j="Ombro E" cx="135" cy="90" r="10"/>
+                    <circle class="joint" data-j="Punho D" cx="45" cy="180" r="8"/>
+                    <circle class="joint" data-j="Punho E" cx="155" cy="180" r="8"/>
+                    <circle class="joint" data-j="Costas" cx="100" cy="140" r="15"/>
+                    <circle class="joint" data-j="Joelho D" cx="80" cy="300" r="12"/>
+                    <circle class="joint" data-j="Joelho E" cx="120" cy="300" r="12"/>
+                </svg>
+            </div>
+        </aside>
+
+        <main>
+            <div class="panel">
+                <h2 id="edTitle" style="font-family:'Orbitron'; font-size:12px; color:var(--gold); margin-bottom:10px;">TREINO DIÁRIO</h2>
+                <textarea id="edNote" placeholder="Anotações técnicas, o que aprendeu hoje..."></textarea>
+                <div style="display:grid; grid-template-columns: 80px 1fr; gap:10px;">
+                    <input type="number" id="edMin" value="60" title="Minutos de treino">
+                    <button class="btn" onclick="Control.save()">SALVAR PERFORMANCE</button>
+                </div>
+            </div>
+            <div class="panel">
+                <h3>RADAR TÉCNICO</h3>
+                <canvas id="radarChart" height="150"></canvas>
+            </div>
+        </main>
+
+        <aside>
+            <div class="panel">
+                <h3>GRADE ANUAL</h3>
+                <div id="grid" class="grid"></div>
+            </div>
+            <div class="panel" style="text-align:center;">
+                <h2 id="stCount" style="font-family:'Orbitron'; font-size:2rem; color:var(--gold);">0</h2>
+                <p id="uiGoalText" style="font-size:8px; color:#444;">TREINOS REALIZADOS</p>
+                <button class="btn" style="margin-top:10px; background:var(--blue); color:#000;" onclick="Control.exportPDF()">EXPORTAR DOSSIÊ</button>
+                <button onclick="Control.logout()" style="display:block; width:100%; background:none; border:none; color:var(--red); font-size:8px; margin-top:15px; cursor:pointer; font-weight:800;">LOGOUT / RESET</button>
+            </div>
+        </aside>
+    </div>
+</div>
+
+<script>
+const Control = (() => {
+    let db, user, activeDay = null, radar = null;
+
+    const init = () => {
+        const req = indexedDB.open("BJJ_SENTINEL_V6", 1);
+        req.onupgradeneeded = e => {
+            const d = e.target.result;
+            d.createObjectStore("u", { keyPath: "em" });
+            d.createObjectStore("t", { keyPath: "id" });
+        };
+        req.onsuccess = e => {
+            db = e.target.result;
+            const s = localStorage.getItem("apex_s");
+            if(s) db.transaction("u").objectStore("u").get(s).onsuccess = r => {
+                if(r.target.result) start(r.target.result);
+            };
+        };
+        document.querySelectorAll('.joint').forEach(j => j.onclick = () => j.classList.toggle('active'));
+    };
+
+    const login = () => {
+        const n = document.getElementById('inName').value.trim();
+        const a = parseInt(document.getElementById('inAge').value);
+        const r = document.getElementById('inRank').value;
+        const f = parseInt(document.getElementById('inFreq').value);
+        const e = document.getElementById('inEmail').value.trim();
+
+        if(n.length < 3) { alert("O nome deve ter pelo menos 3 letras!"); return; }
+        if(a < 4) { alert("Idade mínima de 4 anos!"); return; }
+        if(!e) { alert("E-mail é obrigatório!"); return; }
+
+        const obj = { name: n, age: a, rank: r, em: e, goal: f * 52 };
+        db.transaction("u", "readwrite").objectStore("u").put(obj).onsuccess = () => {
+            localStorage.setItem("apex_s", e);
+            start(obj);
+        };
+    };
+
+    const start = u => {
+        user = u;
+        document.getElementById('authScreen').style.display = 'none';
+        document.getElementById('app').style.display = 'block';
+        document.getElementById('uiName').innerText = user.name.toUpperCase();
+        document.getElementById('uiAge').innerText = `${user.age} ANOS`;
+        
+        const rankEl = document.getElementById('uiRank');
+        rankEl.innerText = `FAIXA ${user.rank.toUpperCase()}`;
+        const colors = {'Branca':'#fff','Cinza':'#888','Amarela':'#ff0','Laranja':'#f80','Verde':'#080','Azul':'#00f','Roxa':'#808','Marrom':'#841','Preta':'#000'};
+        rankEl.style.background = colors[user.rank];
+        rankEl.style.color = (['Branca','Amarela','Cinza'].includes(user.rank)) ? '#000' : '#fff';
+        
+        document.getElementById('uiGoalText').innerText = `DE ${user.goal} TREINOS PROJETADOS`;
+        refresh();
+    };
+
+    const refresh = () => {
+        db.transaction("t").objectStore("t").getAll().onsuccess = e => {
+            const logs = e.target.result.filter(l => l.em === user.em);
+            renderGrid(logs);
+            renderRadar(logs);
+            document.getElementById('stCount').innerText = logs.length;
+        };
+    };
+
+ const renderGrid = logs => {
+ const grid = document.getElementById('grid'); grid.innerHTML = "";
+ para(deixe i=1; i <= usuário.objetivo; i++) {
+ const log = logs.find(l => ln === i), d = document.createElement('div');
+ d.className = `dia ${log ? 'feito' : ''} ${activeDay === i ? 'selecionado': ''}`;
+ d.innerText = i;
+ d.onclick = () => {
+ activeDay = i;
+ document.getElementById('edTitle').innerText = `TREINO #${i}`;
+ document.getElementById('edNote').value = log ? log.txt: "";
+ document.querySelectorAll('.joint').forEach(j => j.classList.remove('active'));
+ if(log?.lesões) log.lesões.forEach(lesão => {
+ const el = document.querySelector(`[data-j="${inj}"]`);
+ if(el) el.classList.add('ativo');
+ });
+ atualizar();
+ };
+ grade.appendChild(d);
+        }
+ };
+
+ const salvar = () => {
+ se(!activeDay) { alert("Selecione um número na série anual primeiro!"); retornar; }
+ const log = {
+ id: user.em + "_" + activeDay,
+ em: usuário.em,
+ n: dia ativo,
+ txt: document.getElementById('edNote').value,
+ min: parseInt(documento.getElementById('edMin').valor) || 0,
+ lesões: Array.from(document.querySelectorAll('.joint.active')).map(el => el.dataset.j),
+ dados: nova Data().toLocaleDateString()
+ };
+ db.transaction("t", "readwrite").objectStore("t").put(log).onsuccess = () => refresh();
+ };
+
+ const renderRadar = logs => {
+ const ctx = document.getElementById('radarChart').getContext('2d');
+ const txt = logs.map(l => l.txt.toLowerCase()).join("");
+ const dados = [
+ (txt.match(/pass/g)||[]).comprimento, 
+ (txt.match(/guard/g)||[]).comprimento, 
+ (txt.match(/final/g)||[]).comprimento, 
+ (txt.match(/queda/g)||[]).comprimento, 
+ (txt.match(/costa/g)||[]).comprimento
+ ];
+ se(radar) radar.destruir();
+ radar = novo gráfico(ctx, {
+ tipo: 'radar',
+ dados: { rótulos: ['Passagem', 'Guarda', 'Finalização', 'Queda', 'Costas'], conjuntos de dados: [{ dados, borderColor: '#ffcc00', backgroundColor: 'rgba(255,204,0,0.1)', borderWidth: 2 }] },
+ opções: { escalas: { r: { grade: { cor: '#222' }, angleLines: { cor: '#222' }, ticks: { exibição: falso }, pointLabels: { cor: '#555', fonte: { tamanho: 9 } } } }, plugins: { legenda: { exibição: falso } } }
+ });
+ };
+
+ const generatePDF = () => {
+ se (!window.jspdf) { alert("Erro: Biblioteca PDF não carregada. Verifique sua conexão."); retornar; }
+ const { jsPDF } = window.jspdf;
+ const doc = novo jsPDF();
+        
+ doc.setFontSize(18);
+ doc.text("BJJ SENTINEL - RELACIONAMENTO DE PERFORMANCE", 14, 20);
+ doc.setFontSize(11);
+ doc.text(`ATLETA: ${user.name} | CAIXA: ${user.rank} | IDENTIDADE: ${user.age} ANOS`, 14, 30);
+        
+ db.transaction("t").objectStore("t").getAll().onsuccess = e => {
+ const userLogs = e.target.result.filter(l => lem === user.em).sort((a,b) => an - bn);
+ const corpo = userLogs.map(l => [ln, l.date, l.min+'m', l.injuries.join(", "), l.txt.substring(0, 50)]);
+            
+ doc.autoTable({ 
+ início: 40, 
+ cabeça: [['#', 'Dados', 'Min', 'Lesões', 'Resumo das Notas']], 
+ corpo: corpo,
+ tema: 'listrado',
+ estilos de cabeça: { fillColor: [255, 204, 0], textColor: [0, 0, 0] }
+ });
+ doc.save(`BJJ_Report_${user.name}.pdf`);
+ };
+ };
+
+ const logout = () => { localStorage.clear(); location.reload(); };
+
+ retornar {init, login, salvar, exportarPDF: gerarPDF, sair };
+})();
+
+window.onload = Control.init;
+</roteiro>
+</corpo>
+</html>
